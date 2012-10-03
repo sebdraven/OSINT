@@ -4,7 +4,7 @@ from white_list import white_list
 import re
 import subprocess
 import threading
-
+import random_user_agent
 
 class search(threading.Thread):
     def __init__(self,limit,criteria,scriptjs,db,url_pattern='((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&])*)'):
@@ -17,11 +17,13 @@ class search(threading.Thread):
         self.db=self.connection[db]
         self.whitelist=white_list(db)
         self.regex_url=re.compile(url_pattern)
-        
+        rua=random_user_agent()
+        self.ua=rua.rand()
+            
     def run(self):
         i=0
         while i < self.limit:
-            result=subprocess.Popen(['casperjs' ,self.scriptjs,str(i),self.criteria],stdout=PIPE)
+            result=subprocess.Popen(['casperjs' ,self.scriptjs,str(i),self.criteria,self.ua],stdout=PIPE)
             for ligne in result.stdout:
                 if ligne.find('/')!=-1 and ligne.find('http://') != -1:
                     url_information=self.regex_url.search(ligne)

@@ -2,16 +2,21 @@
 var casper = require('casper').create();
 
 
-var url=casper.cli.get(0)
+var url=casper.cli.get(0);
+var ua =casper.cli.get(1)
 
-casper.start(url,function(){
-
-    // aggregate results for the 'casperjs' search
-	this.echo(this.getTitle());
-    this.echo(this.fetchText('li'));
-	
-    // now search for 'phantomjs' by filling the form again
+casper.start().then(function() {
+    this.userAgent(ua);
+    this.open(url, {
+        method: 'get',
+        headers: {
+            'Accept': 'application/text'
+        }
+    });
 });
 
-casper.run();
+casper.run(function() {
+    this.echo(this.debugPage());
+    this.exit();
+});
 

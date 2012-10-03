@@ -1,7 +1,7 @@
-import networks
+from network import networks
 import argparse
 import sys
-import dschield
+from geolocatisation import dschield
 
 parser = argparse.ArgumentParser(description='Geolocalisation by domains')
 parser.add_argument('--domaine', dest='fqdn',help='make a fqdn for geolocalisation')
@@ -49,7 +49,8 @@ for domaine in domaines:
             temp=temp+','+country
         print temp	
         geoloc.append(temp)
-
+    else: 
+        geoloc.append('DNS Failure: '+domaine)
 if args.outfile != None:
     with open(args.outfile,'w') as fw:
         for ligne in geoloc:

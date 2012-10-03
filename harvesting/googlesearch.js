@@ -1,7 +1,8 @@
 var links = [];
 var casper = require('casper').create();
-var padding=casper.cli.get(0)
-var criteria=casper.cli.get(1)
+var padding=casper.cli.get(0);
+var criteria=casper.cli.get(1);
+var ua=casper.cli.get(2)
 function getLinks() {
    
     var links = document.querySelectorAll('h3.r a');
@@ -12,7 +13,7 @@ function getLinks() {
 
 
 casper.start();
-
+casper.userAgent(ua)
 casper.open('http://google.com/search?q='+criteria+'&start='+padding)
 casper.then(function() {
     // aggregate results for the 'casperjs' search
