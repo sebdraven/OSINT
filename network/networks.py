@@ -45,9 +45,9 @@ def extract_whois_information(pattern,whois_text):
         information=m.group(1)
     return information
        
-def resolve(pathgeoloc,client):
+def resolve(pathgeoloc,db):
     connection=Connection('localhost',27017)
-    db=connection[client]
+    db=connection[db]
     domaines=db.new_domaines.find()
     for domaine in domaines:
         try:       	

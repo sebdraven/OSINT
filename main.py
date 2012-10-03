@@ -30,7 +30,7 @@ import threading
 #                print cidr
 #        if cidr.find('0.0.0.0') == -1:
 #                     ips = IP(cidr)
-#             son=search_on_network.search_on_network(ips,'',scriptsJS[1],50,client)
+#             son=search_on_network.search_on_network(ips,'',scriptsJS[1],50,db)
 #             son.start()
 #                 #if not str(ips) in network_all_ready:
                   #  network_all_ready.append(str(ips))
@@ -43,11 +43,11 @@ import threading
 #            print Whois.text
 
 
-def metasearch(criteria,script,client,geoloc):
+def metasearch(criteria,script,db,geoloc):
     print "########### Meta Search ###########"
     for script in scriptsJS:
         for criterius in criteria:
-            gs=search.search(20,criterius,script,client)
+            gs=search.search(20,criterius,script,db)
             gs.start()
 
 
@@ -57,12 +57,12 @@ def metasearch(criteria,script,client,geoloc):
     print "########### Search terminated ###########"
 
     print "########### Resolve IP ############"
-    networks.resolve(geoloc,client)
-def search_ip(client,geoloc,scriptsJS):
+    networks.resolve(geoloc,db)
+def search_ip(db,geoloc,scriptsJS):
     print "########### Search by IP ###########"
     ips=[]
     connection=Connection('localhost',27017)
-    db=connection[client]
+    db=connection[db]
     domaines=db.new_domaines.find()
     for domaine in domaines:
         try:    
@@ -74,7 +74,7 @@ def search_ip(client,geoloc,scriptsJS):
     for ip in set(ips):
         if ip != '0.0.0.0':
             i+=1
-        gs=search.search(20,'ip:'+str(ip),scriptsJS[1],client)
+        gs=search.search(20,'ip:'+str(ip),scriptsJS[1],db)
         gs.start()
         if i % 10 ==0:
             for t in threading.enumerate():
@@ -84,16 +84,16 @@ def search_ip(client,geoloc,scriptsJS):
     print "########### Search by network ###########"
 #search_ip(ips,[])
     print "########### Resolve IP ############"
-    networks.resolve(geoloc,client)
+    networks.resolve(geoloc,db)
 
 
 '''
 reset()
 '''
 
-def metadata_exctract(client):
+def metadata_exctract(db):
     print "########## Meta Data IP ##########"
-    mdb=mongodb.mongodb('localhost',27017,client)
+    mdb=mongodb.mongodb('localhost',27017,db)
     i=0
 
     for domaine in mdb.selectall('new_domaines'):
@@ -103,7 +103,7 @@ def metadata_exctract(client):
         print url
         if not 'meta' in domaine:
             domaine['meta']='ok'
-            mtd=metadataextract.metadataextract('harvesting/metaextract.js',client,domaine_value,url)
+            mtd=metadataextract.metadataextract('harvesting/metaextract.js',db,domaine_value,url)
             mtd.start()
             if i % 30==0:
                 for t in threading.enumerate():
@@ -112,7 +112,7 @@ def metadata_exctract(client):
 
 def reset():
     connection=Connection('localhost',27017)
-    db=connection.connection[client]
+    db=connection.connection[db]
     for domaine in db.new_domaines.find():
         domaine['meta']=None
         db.update(domaine,'new_domaines')
@@ -126,25 +126,25 @@ if __name__ == '__main__':
     main_thread = threading.currentThread()
 
     parser = argparse.ArgumentParser(description='BHEK Tracking by google')
-    parser.add_argument('--client', dest='client', help='Script JS for CasperJS')
+    parser.add_argument('--db', dest='db', help='Script JS for CasperJS')
     parser.add_argument('--geoloc', dest='geoloc')
     parser.add_argument('--action', dest='action')
     parser.add_argument('--criteria', dest='criteria')
     args = parser.parse_args()
-    client=args.client
+    db=args.db
     criteria=args.criteria
     geoloc=args.geoloc
     
     if args.action=='reset':
         reset()
     elif args.action=='metasearch':
-        if criteria and scriptsJS and client and geoloc:
+        if criteria and scriptsJS and db and geoloc:
             criteria=criteria.split(',')
-            metasearch(criteria,scriptsJS,client,geoloc)    
+            metasearch(criteria,scriptsJS,db,geoloc)    
     elif args.action=='search_ip':
-        search_ip(client, geoloc)
+        search_ip(db, geoloc)
     elif args.action=='metadata':
-        metadata_exctract(client)
+        metadata_exctract(db)
     else:
         parser.print_help()
         sys.exit(1)

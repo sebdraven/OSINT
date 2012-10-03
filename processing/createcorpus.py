@@ -2,17 +2,17 @@
 from mongodb import mongodb
 import sys
 import filters
-client=sys.argv[1]
-mdb=mongodb.mongodb('localhost',27017,client)
+db=sys.argv[1]
+mdb=mongodb.mongodb('localhost',27017,db)
 
 i=0
 
-with open(client+'_domaine.txt','w') as fw:
+with open(db+'_domaine.txt','w') as fw:
 	fw.write('**** *domaine\n')
 	for domaine in mdb.selectall('metadatas'):
 		fw.write(domaine['domaine'])		
 		fw.write('\n')		
-with open(client+'_metadatas.txt','w') as fw:
+with open(db+'_metadatas.txt','w') as fw:
 	fw.write('**** *metadata\n')
 	for domaine in mdb.selectall('metadatas'):		
 		meta=domaine['meta']

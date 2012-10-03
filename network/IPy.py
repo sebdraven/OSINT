@@ -1253,15 +1253,15 @@ def _prefixlenToNetmask(prefixlen, version):
     return ((2L<<prefixlen-1)-1) << (_ipVersionToLen(version) - prefixlen)
          
 
-def _test():
-    import doctest, IPy
-    return doctest.testmod(IPy)
+#def _test():
+#    import doctest, network.IPy
+#    return doctest.testmod(IPy)
 
-if __name__ == "__main__":
-    _test()
+#if __name__ == "__main__":
+#     _test()
 
-    t = [0xf0, 0xf00, 0xff00, 0xffff00, 0xffffff00L]
-    o = []
-    for x in t:
-        pass
-    x = 0L
+#    t = [0xf0, 0xf00, 0xff00, 0xffff00, 0xffffff00L]
+#    o = []
+#    for x in t:
+#       pass
+#    x = 0L

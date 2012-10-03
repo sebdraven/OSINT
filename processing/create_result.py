@@ -10,7 +10,7 @@ def usage():
 if len(sys.argv) != 3:
     usage()
 
-client=sys.argv[1]
+db=sys.argv[1]
 critere=sys.argv[2]
 
 if critere.find(','):
@@ -21,10 +21,10 @@ else:
 
 print "######### Print Result database ##########"
 connection=Connection('localhost',27017)
-db=connection[client]
+db=connection[db]
 domaines=db.new_domaines.find()
 
-with open(client+'.log','w') as fw:
+with open(db+'.log','w') as fw:
     for domaine in domaines:
         try:
             fw.write(','.join(domaine[key] for key in critere))

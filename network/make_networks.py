@@ -3,8 +3,8 @@ import re
 from IPy import IP
 class make_networks(object):
 
-	def __init__(self,host,client):
-		self.db=mongodb.mongodb(host,27017,client)
+	def __init__(self,host,db):
+		self.db=mongodb.mongodb(host,27017,db)
 		self.networks={}
 	
 	def createNetworks(self,collection):
