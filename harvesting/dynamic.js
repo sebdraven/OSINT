@@ -1,11 +1,10 @@
 var casper = require("casper").create({
     verbose: true
 });
-
+url = casper.cli.get(0)
 // The base links array
 var links = [
-    "http://pastebin.com/archive"
-    
+    url
 ];
 
 // If we don't set a limit, it could go on forever

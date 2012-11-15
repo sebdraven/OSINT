@@ -22,9 +22,10 @@ class Content_search(object):
         if len(tokens) > 0:
             return True
         return False
+    
     def keywords_and(self,keywords):
         keywords=keywords.split('&')
-        result=''
+        
         for keyword in keywords:
             if self.keyword_only(keyword) == False:
                 return False

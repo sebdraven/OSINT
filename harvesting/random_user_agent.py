@@ -9,7 +9,7 @@ class Random_user_agent(object):
     classdocs
     '''
     _instance = None
-    def __init__(self,path_user_agent='user_agents'):
+    def __init__(self,path_user_agent='harvesting/user_agents'):
         '''
         Constructor
         '''

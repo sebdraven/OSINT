@@ -1,36 +1,57 @@
 #!/usr/bin/python
-import pymongo
 from pymongo import Connection
-import sys
-
-def usage():
-    print "#Create result: ./create_result.py base 'critere1,critere2'"
-    print len(sys.argv)
-    sys.exit(1)
-if len(sys.argv) != 3:
-    usage()
-
-db=sys.argv[1]
-critere=sys.argv[2]
-
-if critere.find(','):
-    critere=critere.split(',')
-else:
-    usage()
+import pymongo
 
 
-print "######### Print Result database ##########"
-connection=Connection('localhost',27017)
-db=connection[db]
-domaines=db.new_domaines.find()
+class Create_Result():
+	
+	def __init__(self,dbname,critere):
+		self.dbname=dbname
+		self.critere=critere
+		
+	def process(self,collection):
+		print "######### Print Result database ##########"
+		connection=Connection('localhost',27017)
+		db=connection[self.dbname]
+		domaines=db[collection].find()
+		if self.critere.find(','):
+			critere=self.critere.split(',')
+		else:
+			if len(self.critere) > 0:
+				critere=[critere]
 
-with open(db+'.log','w') as fw:
-    for domaine in domaines:
-        try:
-            fw.write(','.join(domaine[key] for key in critere))
-            fw.write('\n')
-        except KeyError:
-            print 'domaine: '+str(domaine)
-        except pymongo.errors.OperationFailure:
-            print 'error mongo '+ str(domaine)
+		with open(self.dbname+'.log','w') as fw:
+			for domaine in domaines:
+				try:
+					fw.write(','.join(domaine[key] for key in critere))
+					fw.write('\n')
+				except KeyError:
+					print 'domaine: '+str(domaine)
+				except pymongo.errors.OperationFailure:
+					print 'error mongo '+ str(domaine)
 
+	def processScanners(self, collection):
+		connection = Connection('localhost', 27017)
+		db = connection[self.dbname]
+		domaines = db[collection].find()		
+		if self.critere.find(','):
+			critere = self.critere.split(',')
+		else:
+			if len(self.critere) > 0:
+				critere = [critere]
+									
+		with open(self.dbname + '.log', 'w') as fw:
+			for domaine in domaines:
+				try:
+					towrite=''
+					for key in critere:
+						infos = domaine[key]
+						if len(infos)>0:
+							if isinstance(infos, list):
+								infos=','.join(infos)
+							towrite=towrite+','+infos
+							fw.write(towrite+'\n')
+				except KeyError:
+					print 'domaine: ' + str(domaine)
+				except pymongo.errors.OperationFailure:
+					print 'error mongo ' + str(domaine)

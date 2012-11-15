@@ -5,6 +5,13 @@ import re
 import socket
 import whois
 
+def port_connexion_by_hostname(hostname,port):
+    try:
+        http_socket = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
+        http_socket.connect ( ( hostname, port ) )
+        return True
+    except socket.gaierror:
+        return False    
 def resolve_dns(hostname):
     ip=None
     try:
@@ -45,9 +52,10 @@ def extract_whois_information(pattern,whois_text):
         information=m.group(1)
     return information
        
-def resolve(pathgeoloc,db):
-    connection=Connection('localhost',27017)
-    db=connection[db]
+def resolve(pathgeoloc,db_value):
+    connection=Connection('localhost',27017)    
+    db=connection[db_value]
+    
     domaines=db.new_domaines.find()
     for domaine in domaines:
         try:       	
@@ -61,12 +69,14 @@ def resolve(pathgeoloc,db):
                     key = geolocIP(pathgeoloc,ip)
                     domaine['geoloc']=key
                     whois_text=whoisIP("whois.ripe.net",ip)
+                    if not 'Whois'in domaine:
+                        domaine['Whois']=whois_text
                     network=None
                     if whois_text !=None:
-             	        pattern_network = 'inetnum: (.*)'				
-             	        network=extract_whois_information(pattern_network,whois_text)
+             	      pattern_network = 'inetnum: (.*)'				
+             	      network=extract_whois_information(pattern_network,whois_text)
              	    if network != None:
-                 	    domaine['network']=network
+                 	  domaine['network']=network
                     db.new_domaines.save(domaine)
         except TypeError:
                 print 'Error type '+domaine_value            

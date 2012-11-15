@@ -8,10 +8,13 @@ from harvesting import search
 from mongodb import mongodb
 from network import networks
 from processing import metadataextract
+from network import make_networks
+from processing.create_result import Create_Result
 from pymongo.connection import Connection
 import argparse
 import sys
 import threading
+from twisted.persisted import crefutil
 
 #def search_ip(domaine_ip,network_all_ready):    
 #    keys = domaine_ip
@@ -42,27 +45,42 @@ import threading
 #            print 'ip non categorise:' +key + 'cidr: '+cidr
 #            print Whois.text
 
+def create_network(db):
+    network=make_networks.make_networks('localhost', db)
+    network.createNetworks('new_domaines')
+    network.exportFile(db+'_network.log')
 
+def create_result(db,collection,criteria):
+    createResult=Create_Result(db,criteria)
+    if collection=='scanners':
+        createResult.processScanners(collection)
+        return
+    createResult.process(collection)
+    
 def metasearch(criteria,script,db,geoloc):
     print "########### Meta Search ###########"
-    for script in scriptsJS:
-        for criterius in criteria:
-            gs=search.search(20,criterius,script,db)
+    
+    thread_pool=[]
+    for criterius in criteria:
+        for script in scriptsJS:
+            gs=search.search(100,criterius,script,db)
             gs.start()
-
-
+            thread_pool.append(gs)
     for t in threading.enumerate():
         if t is not main_thread:
             t.join()
+    for t in thread_pool:
+        t.record()
     print "########### Search terminated ###########"
 
     print "########### Resolve IP ############"
     networks.resolve(geoloc,db)
-def search_ip(db,geoloc,scriptsJS):
+    
+def search_ip(db_value,geoloc,scriptsJS):
     print "########### Search by IP ###########"
     ips=[]
     connection=Connection('localhost',27017)
-    db=connection[db]
+    db=connection[db_value]
     domaines=db.new_domaines.find()
     for domaine in domaines:
         try:    
@@ -74,7 +92,7 @@ def search_ip(db,geoloc,scriptsJS):
     for ip in set(ips):
         if ip != '0.0.0.0':
             i+=1
-        gs=search.search(20,'ip:'+str(ip),scriptsJS[1],db)
+        gs=search.search(20,'ip:'+str(ip),scriptsJS[1],db_value)
         gs.start()
         if i % 10 ==0:
             for t in threading.enumerate():
@@ -84,7 +102,7 @@ def search_ip(db,geoloc,scriptsJS):
     print "########### Search by network ###########"
 #search_ip(ips,[])
     print "########### Resolve IP ############"
-    networks.resolve(geoloc,db)
+    networks.resolve(geoloc,db_value)
 
 
 '''
@@ -125,16 +143,17 @@ if __name__ == '__main__':
 #limit=sys.argv[4]
     main_thread = threading.currentThread()
 
-    parser = argparse.ArgumentParser(description='BHEK Tracking by google')
-    parser.add_argument('--db', dest='db', help='Script JS for CasperJS')
+    parser = argparse.ArgumentParser(description='metaharvester')
+    parser.add_argument('--db', dest='db', help='db in mongo to store informations')
     parser.add_argument('--geoloc', dest='geoloc')
     parser.add_argument('--action', dest='action')
     parser.add_argument('--criteria', dest='criteria')
+    parser.add_argument('--collection', dest='collection')
     args = parser.parse_args()
     db=args.db
     criteria=args.criteria
     geoloc=args.geoloc
-    
+    collection=args.collection
     if args.action=='reset':
         reset()
     elif args.action=='metasearch':
@@ -142,9 +161,17 @@ if __name__ == '__main__':
             criteria=criteria.split(',')
             metasearch(criteria,scriptsJS,db,geoloc)    
     elif args.action=='search_ip':
-        search_ip(db, geoloc)
+        search_ip(db, geoloc,scriptsJS)
+    elif args.action =='create_network':
+        create_network(db)    
     elif args.action=='metadata':
         metadata_exctract(db)
+    elif args.action == 'create_result':
+        if not criteria and not db:
+            parser.print_help()
+        else:
+            if collection:
+                create_result(db,collection,criteria)    
     else:
         parser.print_help()
         sys.exit(1)

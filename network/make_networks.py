@@ -1,4 +1,4 @@
-import mongodb
+from mongodb import mongodb
 import re
 from IPy import IP
 class make_networks(object):

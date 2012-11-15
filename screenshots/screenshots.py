@@ -17,16 +17,7 @@ class screenshots(threading.Thread):
 		self.website=website
 		threading.Thread.__init__(self)
 		
-	def makescreenshots(self):
-        	for host in set(self.listofwebsites):
-			print "prise de la copie d'ecran: "+host    
-			cmd='casperjs '+self.jsfile+' '+host +' http://'+host +' '+self.location
-			print cmd
-			args=cmd.split()
-			print args
-			result=subprocess.Popen(args,stdout=PIPE)
-			for ligne in result.stdout:
-				print ligne
+	
 	def run(self):
 		cmd='casperjs '+self.jsfile+' '+self.website +' http://'+self.website +' '+self.location
 		print cmd

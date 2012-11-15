@@ -1,5 +1,5 @@
 import threading
-import time
+
 from harvesting import search
 
 class search_on_network(threading.Thread):
@@ -10,10 +10,10 @@ class search_on_network(threading.Thread):
 		self.network_ip=network_ip
 		self.network_all_ready=[]
 	def run(self):
-		 if not str(self.network_ip) in self.network_all_ready:
-                    self.network_all_ready.append(str(self.network_ip))
-                    for ip in self.network_ip:
-			setattr(self.gs,'criteria','ip:'+str(ip))
-			self.gs.run()                        
+		if not str(self.network_ip) in self.network_all_ready:
+			self.network_all_ready.append(str(self.network_ip))
+			for ip in self.network_ip:
+				setattr(self.gs,'criteria','ip:'+str(ip))
+				self.gs.run()                        
 			
 		
