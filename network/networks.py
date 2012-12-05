@@ -69,15 +69,21 @@ def resolve(pathgeoloc,db_value):
                     key = geolocIP(pathgeoloc,ip)
                     domaine['geoloc']=key
                     whois_text=whoisIP("whois.ripe.net",ip)
+                    netname=None
                     if not 'Whois'in domaine:
-                        domaine['Whois']=whois_text
+                        pattern_netname='netname: (.*)'
+                        netname=extract_whois_information(pattern_netname,whois_text)
+                        domaine['netname']=netname
                     network=None
                     if whois_text !=None:
              	      pattern_network = 'inetnum: (.*)'				
              	      network=extract_whois_information(pattern_network,whois_text)
              	    if network != None:
                  	  domaine['network']=network
-                    db.new_domaines.save(domaine)
+                    try:   
+                        db.new_domaines.save(domaine)
+                    except:
+                         print domaine
         except TypeError:
                 print 'Error type '+domaine_value            
         except pymongo.errors.OperationFailure:

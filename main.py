@@ -14,7 +14,6 @@ from pymongo.connection import Connection
 import argparse
 import sys
 import threading
-from twisted.persisted import crefutil
 
 #def search_ip(domaine_ip,network_all_ready):    
 #    keys = domaine_ip
