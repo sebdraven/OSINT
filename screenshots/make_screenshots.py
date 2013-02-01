@@ -16,7 +16,7 @@ print domaines
 i=0
 for domaine in domaines:
 	i+=1	
-	screen=screenshots.screenshots(domaines,jsfile,emplacement,domaine)
+	screen=screenshots.Screenshots(domaines,jsfile,emplacement,domaine)
 	screen.start()
 	if i % int(threadpool):
 		for t in threading.enumerate():

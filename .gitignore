@@ -1,0 +1,8 @@
+#compiled file
+*.pyc
+#log
+*.log
+#screen
+*.png
+#data
+*.csv

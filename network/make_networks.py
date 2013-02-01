@@ -13,15 +13,7 @@ class make_networks(object):
 			try:
 				network=domaine['network']
 				fqdn=domaine['domaine']
-				whois = domaine['Whois']
-				pattern ='netname: (.*)'
-				reg_netname=re.compile(pattern)
-				m = reg_netname.search(whois)
-				netname=''
-				if m:
-					print m.group(1)
-					netname=m.group(1).strip()
-		
+				netname = domaine['netname']
 				if network in self.networks:
 					nt=self.networks[network]
 					nt.append((fqdn,netname))
@@ -37,7 +29,12 @@ class make_networks(object):
 			for key in keys:
 				try:
 					result=''
-					cidr=IP(key.replace(' ',''))
+					cidr=None
+					try:
+						cidr=IP(key.replace(' ',''))
+					except ValueError:
+						cidr=''
+					
 					#fw.write(key + ';')
 					add=result.join(":"+str(item) for item in self.networks[key])
 
