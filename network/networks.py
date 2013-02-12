@@ -25,11 +25,24 @@ def geolocIP(pathgeoloc,ip):
     glc = pygeoip.GeoIP(pathgeoloc)
     try:
         ar=glc.record_by_addr(ip)
-        geo=str(ar['latitude'])+'_'+str(ar['longitude'])
+        if ar!=None:
+            geo=str(ar['latitude'])+'_'+str(ar['longitude'])
+        return ''
     except pygeoip.GeoIPError:
         print "Erreur de geoloc"
     return geo
-    
+def geolocCountry(pathgeoloc,ip):
+    geo=None
+    glc = pygeoip.GeoIP(pathgeoloc)
+    try:
+        ar=glc.record_by_addr(ip)
+        if ar != None:
+            geo=ar['country_code3']
+        else:
+            return ''
+    except pygeoip.GeoIPError:
+        print "Erreur de geoloc"
+    return geo    
 def whoisIP(whois_service,ip):
     result=None
     try:

@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 act.create_result(collection,criteria)
     elif args.action =='dnstree':
             if db:
-                act.dnstree()
+                act.dnstree(db)
     elif args.action =='crawl':
             if db:
                 act.crawl()

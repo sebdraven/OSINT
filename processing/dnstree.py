@@ -5,7 +5,7 @@ Created on Dec 20, 2012
 '''
 from pymongo.connection import Connection
 import pymongo
-import tldextract
+from pyfaup.faup import Faup
 class DNSTree(object):
     '''
     classdocs
@@ -20,11 +20,10 @@ class DNSTree(object):
         self.db=connection[db_value]
     def process(self):
         list_domains=self.db['new_domaines'].distinct('domaine')
+        fex=Faup()
         for domain in list_domains:
-            tldex=tldextract.extract(domain,False)
-            tld=tldex.tld
-            subdomains=tldex.subdomain
-            domain_value=tldex.domain
-            print (tld+','+domain_value+','+','.join(subdomains[::-1]).replace('www','')).replace(',,',',')
+            url='http://'+str(domain)
+            fex.decode(url, False)
+            print (fex.get_tld()+','+fex.get_domain()+','+','.join(fex.get_subdomain().split('.')[::-1]).replace('www','')).replace(',,',',')
             
         

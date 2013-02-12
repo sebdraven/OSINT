@@ -6,3 +6,9 @@
 *.png
 #data
 *.csv
+.project
+.settings/org.eclipse.ltk.core.refactoring.prefs
+.pydevproject
+*.txt
+*.tar.gz
+*.zip
