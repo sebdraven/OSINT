@@ -25,7 +25,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='metaharvester')
     parser.add_argument('--db', dest='db', help='db in mongo to store informations')
-    parser.add_argument('--toto', dest='toto')
+    parser.add_argument('--geoloc', dest='geoloc')
     parser.add_argument('--action', dest='action')
     parser.add_argument('--criteria', dest='criteria')
     parser.add_argument('--collection', dest='collection')
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     criteria=args.criteria
     if criteria==None:
         criteria=''
-    geoloc=args.toto
+    geoloc=args.geoloc
     if geoloc==None:
         geoloc=''
     collection=args.collection
