@@ -137,7 +137,7 @@ class Actions(object):
         i=0
         for domaine in domaines:
             i=i+1
-            cw=CrawlerThread(domaine,self.db_client)        
+            cw=CrawlerThread(domaine,self.db)        
             cw.start()        
         
             if i % 30==0:
