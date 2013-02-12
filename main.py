@@ -80,7 +80,7 @@ if __name__ == '__main__':
                 parser.print_help()
     elif args.action == 'init':
         if db and attr and collection:
-            act.init(collection, attr)
+            act.init(db,collection, attr)
         else:
             parser.print_help()    
     else:       
