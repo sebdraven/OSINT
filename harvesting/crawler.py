@@ -34,19 +34,19 @@ class Record(threading.Thread):
                 url=self.r.rpop('crawl')
                 fex=Faup()
                 if url:
+                    print "url found: "+url
                     fex.decode(url)
                     domain=fex.get_host()
                     entry = self.db.new_domaines.find_one({'domaine':domain})
                     if entry== None:
                         print "record: "+ domain
                         self.db.new_domaines.save({'domaine':domain,'urls':[url]})
-                  #  for entry in entries:
-                   #     print "domaine already found"               
-                    #    urls_stored = entry['urls']
-                     #   if not url in urls_stored:
-                      #      urls_stored.append(url)
-                       #     entry['urls']=urls_stored
-                        #    self.db.new_domaines.save(entry)
+                                  
+                    urls_stored = entry['urls']
+                    if not url in urls_stored:
+                        urls_stored.append(url)
+                        entry['urls']=urls_stored
+                        self.db.new_domaines.save(entry)
                         
    
 class Crawler(Pholcidae):
