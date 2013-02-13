@@ -49,18 +49,32 @@ class search(threading.Thread):
         print "#######################record############################"
         domaines = iter(self.urls_by_domaine)    
         for domaine in domaines:
-            entry = self.db.new_domaines.find({'domaine':domaine})
+            entry = self.db.new_domaines.find_one({'domaine':domaine})
             if entry== None:
-                self.db.new_domaines.save({'domaine':domaine,'urls':self.urls_by_domaine[domaine]})
+                self.db.new_domaines.save({'domaine':domaine,'urls':self.urls_by_domaine[domaine],'criteria':[self.criteria]})
             else:
                     
                 try:
-                    urls_stored = self.db.new_domaines.get('urls')
+                    urls_stored = entry['urls']
                     urls=self.urls_by_domaine[domaine]
                     urls_to_store=list(set(urls_stored + urls))
-                    print urls_to_store
-                    self.db.new_domaines.save({'domaine':domaine,'urls':urls_to_store})
+                    criteria=entry['criteria']
+                    criteria=list(set(criteria.append(self.criteria)))
+                    entry['criteria']=criteria
+                    self.db.new_domaines.save(entry)
                 except :
-                    self.db.new_domaines.save({'domaine':domaine,'urls':self.urls_by_domaine[domaine]})   
+                    criteria=[]
+                    try :
+                        criteria=entry['criteria']
+                        criteria=list(set(criteria.append(self.criteria)))
+                    except:
+                        criteria.append(self.criteria)
+                        pass
+                    
+                    entry['criteria']=criteria
+                    
+                    
+                    
+                    self.db.new_domaines.save({'domaine':domaine,'urls':self.urls_by_domaine[domaine],'criteria':criteria})   
             
         
