@@ -23,26 +23,6 @@ class Create_Result():
 		with open(self.dbname+'.log','w') as fw:
 			for domaine in domaines:
 				try:
-					fw.write(','.join(domaine[key] for key in critere))
-					fw.write('\n')
-				except KeyError:
-					print 'domaine: '+str(domaine)
-				except pymongo.errors.OperationFailure:
-					print 'error mongo '+ str(domaine)
-
-	def processScanners(self, collection):
-		connection = Connection('localhost', 27017)
-		db = connection[self.dbname]
-		domaines = db[collection].find()		
-		if self.critere.find(','):
-			critere = self.critere.split(',')
-		else:
-			if len(self.critere) > 0:
-				critere = [critere]
-									
-		with open(self.dbname + '.log', 'w') as fw:
-			for domaine in domaines:
-				try:
 					towrite=''
 					for key in critere:
 						infos = domaine[key]
@@ -52,6 +32,6 @@ class Create_Result():
 							towrite=towrite+','+infos
 							fw.write(towrite+'\n')
 				except KeyError:
-					print 'domaine: ' + str(domaine)
+					print 'domaine: '+str(domaine)
 				except pymongo.errors.OperationFailure:
-					print 'error mongo ' + str(domaine)
+					print 'error mongo '+ str(domaine)

@@ -72,9 +72,6 @@ class search(threading.Thread):
                         pass
                     
                     entry['criteria']=criteria
-                    
-                    
-                    
                     self.db.new_domaines.save({'domaine':domaine,'urls':self.urls_by_domaine[domaine],'criteria':criteria})   
             
         
