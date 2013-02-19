@@ -75,7 +75,7 @@ if __name__ == '__main__':
                 act.clean_db(filters)
     elif args.action == 'screenshots':
             if db and args.threadpool:
-                act.screenshots(args.threadpool)
+                act.screenshots(db,args.threadpool)
             else:
                 parser.print_help()
     elif args.action == 'init':
