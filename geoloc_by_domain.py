@@ -44,8 +44,10 @@ for domaine in domaines:
         if geoloc_file == True:
             geo=networks.geolocIP(args.geoloc_file,ip)
             country=networks.geolocCountry(args.geoloc_file,ip)
-            if geo and country:
-                temp=temp+','+country+','+geo
+            if country:
+                temp=temp+','+country
+            if geo:
+                temp=temp+','+geo
         if geoloc_country ==True:
             ds=dschield.dschield('http://dshield.org/ipinfo_ascii.html?ip=')
             ip,country,asname,network=ds.response(ip)              
