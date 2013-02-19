@@ -20,7 +20,7 @@ class Create_Result():
 			if len(self.critere) > 0:
 				critere=[critere]
 
-		with open(self.dbname+'.log','w') as fw:
+		with open(self.dbname+'_'+'_'.join(critere)+'.csv','w') as fw:
 			for domaine in domaines:
 				try:
 					towrite=''
@@ -29,8 +29,9 @@ class Create_Result():
 						if len(infos)>0:
 							if isinstance(infos, list):
 								infos=','.join(infos)
-							towrite=towrite+','+infos
-							fw.write(towrite+'\n')
+						towrite=towrite+','+str(infos)
+					
+					fw.write(towrite[1:]+'\n')
 				except KeyError:
 					print 'domaine: '+str(domaine)
 				except pymongo.errors.OperationFailure:
