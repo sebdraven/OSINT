@@ -22,5 +22,6 @@ class Screenshots(threading.Thread):
 		cmd='casperjs '+self.jsfile+' '+self.website +' http://'+self.website +' '+self.location+' --web-security=no'
 		args=cmd.split()
 		result=subprocess.Popen(args,stdout=PIPE)
+		print "Make screenshots :"+self.website
 		time.sleep(3)			
 	
