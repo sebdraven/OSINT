@@ -4,7 +4,7 @@ var padding=casper.cli.get(0)
 var criteria=casper.cli.get(1)
 function getLinks() {
    
-    var links = document.querySelectorAll('h3 a')
+    var links = document.querySelectorAll('h2 a')
     return Array.prototype.map.call(links, function(e) {
         return e.getAttribute('href')
     });
