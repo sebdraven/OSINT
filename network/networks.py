@@ -18,6 +18,8 @@ def resolve_dns(hostname):
         ip=socket.gethostbyname(hostname)
     except socket.gaierror:
         print "DNS Resolution Failure: "+hostname
+    except socket.error:
+        print 'Erreur reseau'
     return ip 
 
 def geolocIP(pathgeoloc,ip):
@@ -26,7 +28,8 @@ def geolocIP(pathgeoloc,ip):
     try:
         ar=glc.record_by_addr(ip)
         if ar!=None:
-            geo=str(ar['latitude'])+'_'+str(ar['longitude'])
+            if 'latitude' in ar and 'longitude' in ar:
+                geo=str(ar['latitude'])+'_'+str(ar['longitude'])
         return ''
     except pygeoip.GeoIPError:
         print "Erreur de geoloc"

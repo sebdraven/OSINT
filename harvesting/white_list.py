@@ -36,4 +36,3 @@ class white_list():
             return category
 	#def compare_white_list()		
 		
-	

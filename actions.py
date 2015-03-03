@@ -4,18 +4,23 @@ Created on Feb 1, 2013
 @author: slarinier
 '''
 
+from libnmap.parser import NmapParser
+from libnmap.process import NmapProcess
+import pymongo
+from pymongo.connection import Connection
+import threading
+
 from harvesting import search
 from harvesting.crawler import Record, CrawlerThread
+import mongodb
 from network import make_networks, networks
+from network.IPy import IP
 from processing import metadataextract
 from processing.clean_db import Cleandb
 from processing.create_result import Create_Result
 from processing.dnstree import DNSTree
-from pymongo.connection import Connection
 from screenshots.screenshots import Screenshots
-import mongodb
-import pymongo
-import threading
+from scanners.networks import Networks
 
 class Actions(object):
     '''
@@ -56,19 +61,25 @@ class Actions(object):
         print "########### Resolve IP ############"
         networks.resolve(geoloc,self.db_value)
     
-    def search_ip(self,geoloc,scriptsJS):
+    def search_ip(self,geoloc,scriptsJS,ip_range):
         main_thread = threading.currentThread()
         print "########### Search by IP ###########"
         ips=[]
         domaines=self.db.new_domaines.find()
         thread_pool=[]
+        cache={}
         for domaine in domaines:
             try:    
                 ips.append(domaine['ip'])
+    
             except KeyError:
                 print domaine
         i=0
         print 'les IPS sont: '+ str(ips)
+        ip_to_add=[]
+        if ip_range:
+            ip_to_add=[str(x) for x in IP(ip_range)]
+            ips[len(ips):]=ip_to_add
         for ip in set(ips):
             if ip != '0.0.0.0':
                 i+=1
@@ -87,7 +98,24 @@ class Actions(object):
         print "########### Resolve IP ############"
         networks.resolve(geoloc,self.db_value)
 
-
+    def scan_network(self):
+        pass
+    def scan_nmap(self,ip_range,options):
+        ips=[]
+        domaines=self.db.new_domaines.find()
+        thread_pool=[]
+        cache={}
+        for domaine in domaines:
+            try:    
+                ips.append(domaine['ip'])
+                cache[domaine['ip']]=domaine
+            except KeyError:
+                print domaine
+        net=Networks(list(set(ips)),options)        
+        net.run()
+        report=net.make_report()
+        #net.record_report(report,cache,self.db.new_domaines)       
+        pass
     def screenshots(self,db_value,threadpool):
         connection=Connection('localhost',27017)
         db=connection[db_value]
@@ -128,19 +156,21 @@ class Actions(object):
         dnst=DNSTree(db_value)
         dnst.process()
     
-    def crawl(self):
+    def crawl(self,list_domains):
         main_thread = threading.currentThread()
-        domaines=self.db.new_domaines.distinct('domaine')
+        #domaines=self.db.new_domaines.distinct('domaine')
+        domains=list_domains.split(',')
         threadpool=[]
-        rec=Record(self.db_value)
+        lock=threading.Lock()
+        rec=Record(self.db_value,lock)
         rec.start()
         i=0
-        for domaine in domaines:
+        for domain in domains:
             i=i+1
-            cw=CrawlerThread(domaine,self.db)        
-            cw.start()        
+            cw=CrawlerThread(domain,self.db,lock)        
+            cw.run()        
         
-            if i % 30==0:
+            if i % 5==0:
                 for t in threading.enumerate():
                     if t is not main_thread:
                         t.join(2)
@@ -154,6 +184,7 @@ class Actions(object):
                     stop=False
                     
     def clean_db(self,pathfilters):
+        print "#####Clean DB####"        
         directory = "screenshots/screenshots/"+self.db_value
         filters=[]
         with open(pathfilters,'r') as fw:
