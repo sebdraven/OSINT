@@ -22,6 +22,7 @@ class Networks(object):
         result=[]
         for host in report.hosts:
             temp={}
+            print host
             print  host.scripts_results
             temp['ip']=host.ipv4
             print [(service.state,service.port,service.scripts_results) for service in host.services]

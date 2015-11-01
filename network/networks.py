@@ -1,4 +1,4 @@
-from pymongo import Connection
+from pymongo import MongoClient
 import pygeoip
 import pymongo
 import re
@@ -69,13 +69,13 @@ def extract_whois_information(pattern,whois_text):
     return information
        
 def resolve(pathgeoloc,db_value):
-    connection=Connection('localhost',27017)    
+    connection= MongoClient(host='localhost', port=27017)
     db=connection[db_value]
     
     domaines=db.new_domaines.find()
     for domaine in domaines:
         try:       	
-            domaine_value=domaine['domaine']
+            domaine_value = domaine['domaine']
             if not 'ip' in domaine:
                 print 'resolution '+domaine_value
                 ip=resolve_dns(domaine['domaine'])

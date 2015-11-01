@@ -3,7 +3,7 @@ import subprocess
 from subprocess import Popen, PIPE
 import threading
 import pymongo
-from pymongo import Connection
+from pymongo import MongoClient
 import simplejson
 import HTMLParser
 class metadataextract(threading.Thread):
@@ -13,7 +13,7 @@ class metadataextract(threading.Thread):
 		self.domaine=domaine
 		self.scriptjs=scriptjs
 		self.url=url
-		self.connection=Connection('localhost',27017)
+		self.connection= MongoClient(host='localhost', port=27017,db=db)
 		self.db=self.connection[db]
 
 	def run(self):
