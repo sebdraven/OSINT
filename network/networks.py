@@ -30,10 +30,10 @@ def geolocIP(pathgeoloc,ip):
         if ar!=None:
             if 'latitude' in ar and 'longitude' in ar:
                 geo=str(ar['latitude'])+'_'+str(ar['longitude'])
-        return ''
+                return geo
     except pygeoip.GeoIPError:
         print "Erreur de geoloc"
-    return geo
+    return ''
 def geolocCountry(pathgeoloc,ip):
     geo=None
     glc = pygeoip.GeoIP(pathgeoloc)

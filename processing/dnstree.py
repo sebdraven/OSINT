@@ -25,7 +25,7 @@ class DNSTree(object):
         for domain in list_domains:
             url = 'http://' + str(domain)
             fex.decode(url)
-            
+
             try:
                 print (
                 fex.get_tld() + ',' + fex.get_domain() + ',' + ','.join(fex.get_subdomain().split('.')[::-1]).replace('www',
